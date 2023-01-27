@@ -7,26 +7,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.sound.sampled.Port;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/producto/")
 public class ProductoControlador {
     @Autowired
-    ProductoRepositorio repositorio;
+    ProductoRepositorio productoRepositorio;
 
     @GetMapping("all")
     public List<Producto> obtenerTodos(){
-        return repositorio.findAll();
+        return productoRepositorio.findAll();
     }
     @GetMapping("obternerProducto")
     public ResponseEntity<?> obtenerProducto(@Param("id") Long id ){
-        Producto result = repositorio.findById(id).orElse(null);
+        Producto result = productoRepositorio.findById(id).orElse(null);
         if (result == null){
             return ResponseEntity.notFound().build();
         }
@@ -34,7 +31,7 @@ public class ProductoControlador {
     }
     @GetMapping("obternerTodosProductos")
     public ResponseEntity<?> obtenerTodosProductos(@Param("id") Long id ){
-        List< Producto> result = repositorio.findAll();
+        List< Producto> result = productoRepositorio.findAll();
         if (result.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
@@ -48,7 +45,7 @@ public class ProductoControlador {
     @PostMapping("añadirProducto")
     public ResponseEntity<?> insertarProducto(@RequestBody Producto producto){
 
-        Producto salvdado = repositorio.save(producto);
+        Producto salvdado = productoRepositorio.save(producto);
         return ResponseEntity.status(HttpStatus.CREATED).body(producto);
 
     }
@@ -56,23 +53,21 @@ public class ProductoControlador {
 
     @DeleteMapping("borrarProducto")
     public ResponseEntity<?> deletearProducto(@RequestParam("id") Long  idProduct){
-        repositorio.findById(idProduct).map( e ->{
-                repositorio.delete(e);
-                return e;
-        }).ifPresent(ResponseEntity::ok);
-        return ResponseEntity.badRequest().build();
+        productoRepositorio.deleteById(idProduct);
+        return ResponseEntity.noContent().build();
 
     }
+
     @PutMapping("producto/{id}")
     public ResponseEntity<?> editarProducto(@RequestBody Producto editar, @PathVariable Long id){
-        return repositorio.findById(id).map(producto -> {
+        return productoRepositorio.findById(id).map(producto -> {
             producto.setProduct_name(editar.getProduct_name());
             producto.setPrice(editar.getPrice());
-            return ResponseEntity.ok(repositorio.save(producto));
+            return ResponseEntity.ok(productoRepositorio.save(producto));
         }).orElseGet(() -> {
             return ResponseEntity.badRequest().build();
         });
-        
+
     }
 
 
