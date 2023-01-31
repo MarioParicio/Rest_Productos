@@ -16,8 +16,8 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String product_name;
-    double price;
+    String nombre;
+    double precio;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
