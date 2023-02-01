@@ -12,11 +12,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/producto/")
 public class ProductoControlador {
+
+
     @Autowired
     ProductoRepositorio productoRepositorio;
     @Autowired
@@ -35,15 +39,24 @@ public class ProductoControlador {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(result);
+
+        //Manera más corta
+//        return productoRepositorio.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
     }
     @GetMapping("obternerTodosProductos")
     public ResponseEntity<?> obtenerTodosProductos(){
-        List< Producto> result = productoRepositorio.findAll();
+/*        List< Producto> result = productoRepositorio.findAll();
         if (result.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
             return ResponseEntity.ok(result);
-        }
+        }*/
+
+        //Manera más corta
+        return productoRepositorio.findAll().isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(productoRepositorio.findAll());
+
+
 
 
     }
@@ -63,19 +76,21 @@ public class ProductoControlador {
         productoRepositorio.deleteById(idProduct);
         return ResponseEntity.noContent().build();
 
+
+
     }
 
-//    @PutMapping("producto/{id}")
-//    public ResponseEntity<?> editarProducto(@RequestBody Producto editar, @PathVariable Long id){
-//        return productoRepositorio.findById(id).map(producto -> {
-//            producto.setProduct_name(editar.getProduct_name());
-//            producto.setPrice(editar.getPrice());
-//            return ResponseEntity.ok(productoRepositorio.save(producto));
-//        }).orElseGet(() -> {
-//            return ResponseEntity.badRequest().build();
-//        });
-//
-//    }
+    @PutMapping("producto/{id}")
+    public ResponseEntity<?> editarProducto(@RequestBody Producto editar, @PathVariable Long id){
+
+
+        //Manera más corta
+        return Optional.of(editar).map(producto -> {
+            producto.setId(id);
+            return ResponseEntity.ok(productoRepositorio.save(producto));
+        }).orElseGet(() -> ResponseEntity.badRequest().build());
+
+    }
 
     @GetMapping("productoDTO")
     public ResponseEntity<?> obtenerTodosATravesDeDTO(){
@@ -91,14 +106,6 @@ public class ProductoControlador {
                     ResponseEntity.ok(productoRepositorio.findAll().stream().map(ProductoDTOConverter::converToDTO));
 
 
-/*            //Con un foreach
-            List<ProductoDTO> resultDTO = new ArrayList<>();
-            result.forEach(producto -> {
-                ProductoDTO productoDTO = ProductoDTOConverter.converToDTO(producto);
-                resultDTO.add(productoDTO);
-            });
-            return ResponseEntity.ok(resultDTO);
-        }*/
 
     }
     @PostMapping("productoDTO")
