@@ -2,7 +2,6 @@ package org.iesch.ad.demo.Rest_Productos.controladores;
 
 
 import org.iesch.ad.demo.Rest_Productos.dto.CreateProductoDTO;
-import org.iesch.ad.demo.Rest_Productos.dto.ProductoDTO;
 import org.iesch.ad.demo.Rest_Productos.dto.converter.ProductoDTOConverter;
 import org.iesch.ad.demo.Rest_Productos.modelos.Producto;
 import org.iesch.ad.demo.Rest_Productos.repositorio.CategoriaRepositorio;
@@ -13,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/producto/")
@@ -40,7 +37,7 @@ public class ProductoControlador {
         return ResponseEntity.ok(result);
     }
     @GetMapping("obternerTodosProductos")
-    public ResponseEntity<?> obtenerTodosProductos(@Param("id") Long id ){
+    public ResponseEntity<?> obtenerTodosProductos(){
         List< Producto> result = productoRepositorio.findAll();
         if (result.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -55,8 +52,8 @@ public class ProductoControlador {
     @PostMapping("añadirProducto")
     public ResponseEntity<?> insertarProducto(@RequestBody Producto producto){
 
-        Producto salvdado = productoRepositorio.save(producto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(producto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(producto));
 
     }
     //Nuevo inserta
@@ -113,7 +110,7 @@ public class ProductoControlador {
         producto.setCategoria(categoriaRepositorio.findById(createProductoDTO.getCategoriaId()).orElse(null));
         return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(producto));*/
 
-        Producto producto = ProductoDTOConverter.convertDesdeCreateProductoDTO(createProductoDTO);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(ProductoDTOConverter.convertDesdeCreateProductoDTO(createProductoDTO)));
 
 

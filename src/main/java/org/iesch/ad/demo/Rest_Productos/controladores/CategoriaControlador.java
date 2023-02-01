@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/categoria/")
@@ -72,9 +72,7 @@ public class CategoriaControlador {
             Categoria.setNombre(editar.getNombre());
 
             return ResponseEntity.ok(categoriaRepositorio.save(Categoria));
-        }).orElseGet(() -> {
-            return ResponseEntity.badRequest().build();
-        });
+        }).orElseGet(() -> ResponseEntity.badRequest().build());
 
     }
 
