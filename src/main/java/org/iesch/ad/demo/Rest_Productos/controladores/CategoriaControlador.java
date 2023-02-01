@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/categoria/")
@@ -23,20 +24,27 @@ public class CategoriaControlador {
     }
     @GetMapping("obternerCategoria")
     public ResponseEntity<?> obtenerCategoria(@Param("id") Long id ){
-        Categoria result = categoriaRepositorio.findById(id).orElse(null);
-        if (result == null){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(result);
+
+        return categoriaRepositorio.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
+//        return categoriaRepositorio.findById(id).isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(categoriaRepositorio.findById(id));
+
     }
     @GetMapping("obternerTodosCategorias")
     public ResponseEntity<?> obtenerTodosCategorias(@Param("id") Long id ){
-        List<Categoria> result = categoriaRepositorio.findAll();
+/*        List<Categoria> result = categoriaRepositorio.findAll();
         if (result.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
             return ResponseEntity.ok(result);
-        }
+        }*/
+
+        return categoriaRepositorio.findAll().isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(categoriaRepositorio.findAll());
+
+          //Devulve todas las categorias con una funcion lambda
+//        return categoriaRepositorio.findAll().stream().map(ResponseEntity::ok).collect(Collectors.toList()).isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(categoriaRepositorio.findAll().stream().map(ResponseEntity::ok).collect(Collectors.toList()));
+
+
 
 
     }

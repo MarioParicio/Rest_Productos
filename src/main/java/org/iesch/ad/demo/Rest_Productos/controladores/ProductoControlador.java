@@ -82,20 +82,26 @@ public class ProductoControlador {
 
     @GetMapping("productoDTO")
     public ResponseEntity<?> obtenerTodosATravesDeDTO(){
-        List<Producto> result = productoRepositorio.findAll();
+/*        List<Producto> result = productoRepositorio.findAll();
         if (result.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
-            //Return con dto
-            return ResponseEntity.ok(result.stream().map(ProductoDTOConverter::converToDTO).collect(Collectors.toList()));
+//            No hace falta el collect la función map ya devuelve un stream
+         return ResponseEntity.ok(result.stream().map(ProductoDTOConverter::converToDTO).collect(Collectors.toList()));*/
+
+            //Manera más corta
+            return productoRepositorio.findAll().isEmpty() ?  ResponseEntity.notFound().build() :
+                    ResponseEntity.ok(productoRepositorio.findAll().stream().map(ProductoDTOConverter::converToDTO));
+
+
 /*            //Con un foreach
             List<ProductoDTO> resultDTO = new ArrayList<>();
             result.forEach(producto -> {
                 ProductoDTO productoDTO = ProductoDTOConverter.converToDTO(producto);
                 resultDTO.add(productoDTO);
             });
-            return ResponseEntity.ok(resultDTO);*/
-        }
+            return ResponseEntity.ok(resultDTO);
+        }*/
 
     }
     @PostMapping("productoDTO")
