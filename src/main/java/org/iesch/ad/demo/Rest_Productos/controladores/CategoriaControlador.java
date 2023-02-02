@@ -1,6 +1,8 @@
 package org.iesch.ad.demo.Rest_Productos.controladores;
 
 
+import org.iesch.ad.demo.Rest_Productos.dto.CategoriaDTO;
+import org.iesch.ad.demo.Rest_Productos.dto.converter.CategoriaDTOConverter;
 import org.iesch.ad.demo.Rest_Productos.modelos.Categoria;
 import org.iesch.ad.demo.Rest_Productos.repositorio.CategoriaRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +23,16 @@ public class CategoriaControlador {
     @Autowired
     CategoriaRepositorio categoriaRepositorio;
 
+    @Autowired
+    CategoriaDTOConverter categoriaDTOConverter;
+
     @GetMapping("all")
     public List<Categoria> obtenerTodos() {
         return categoriaRepositorio.findAll();
     }
 
-    @GetMapping("obternerCategoria")
-    public ResponseEntity<?> obtenerCategoria(@Param("id") Long id) {
+    @GetMapping("obternerCategoria/{id}")
+    public ResponseEntity<?> obtenerCategoria( @PathVariable Long id) {
 
         return categoriaRepositorio.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 
@@ -48,10 +53,18 @@ public class CategoriaControlador {
 
 
 
+
         //Devulve todas las categorias con una funcion lambda
 /*        List<Categoria> result = categoriaRepositorio.findAll();
         return result.isEmpty() ? ResponseEntity.notFound().build() :
                 ResponseEntity.ok(result);*/
+
+    }
+
+    @GetMapping("obternerCategoriasConProductos")
+    public ResponseEntity<?> obtenerCategoriasConProductos() {
+
+        return categoriaRepositorio.findAll().isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(categoriaRepositorio.findAll().stream().map(categoriaDTOConverter::convertToDTO));
 
     }
 
@@ -62,7 +75,13 @@ public class CategoriaControlador {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoriaRepositorio.save(Categoria));
 
     }
-    //Nuevo inserta
+
+    @PostMapping("añadirCategorias")
+    public ResponseEntity<?> insertarCategorias(@RequestBody List<Categoria> Categorias) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaRepositorio.saveAll(Categorias));
+
+    }
 
     @DeleteMapping("borrarCategoria")
     public ResponseEntity<?> deletearCategoria(@RequestParam("id") Long idCategoria) {

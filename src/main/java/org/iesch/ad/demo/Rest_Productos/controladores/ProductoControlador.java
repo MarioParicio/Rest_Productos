@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/producto/")
@@ -69,7 +70,11 @@ public class ProductoControlador {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(producto));
 
     }
-    //Nuevo inserta
+    @PostMapping("añadirProductos")
+    public ResponseEntity<?> insertarProductos(@RequestBody List<Producto> productos){
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.saveAll(productos));
+    }
 
     @DeleteMapping("borrarProducto")
     public ResponseEntity<?> deletearProducto(@RequestParam("id") Long  idProduct){
@@ -121,6 +126,14 @@ public class ProductoControlador {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(ProductoDTOConverter.convertDesdeCreateProductoDTO(createProductoDTO)));
 
 
+
+    }
+
+    @PostMapping("productosDTO")
+    public ResponseEntity<?> insertarProductosDTO(@RequestBody List<CreateProductoDTO> createProductoDTO){
+
+        List<Producto> productos = createProductoDTO.stream().map(ProductoDTOConverter::convertDesdeCreateProductoDTO).toList();
+        return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.saveAll(productos));
 
     }
 
