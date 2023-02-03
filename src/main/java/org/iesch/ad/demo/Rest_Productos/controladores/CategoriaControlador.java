@@ -3,6 +3,7 @@ package org.iesch.ad.demo.Rest_Productos.controladores;
 
 import org.iesch.ad.demo.Rest_Productos.dto.CategoriaDTO;
 import org.iesch.ad.demo.Rest_Productos.dto.converter.CategoriaDTOConverter;
+import org.iesch.ad.demo.Rest_Productos.error.ProductoNoEncontradoException;
 import org.iesch.ad.demo.Rest_Productos.modelos.Categoria;
 import org.iesch.ad.demo.Rest_Productos.repositorio.CategoriaRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,10 @@ public class CategoriaControlador {
     }
 
     @GetMapping("obternerCategoria/{id}")
-    public ResponseEntity<?> obtenerCategoria( @PathVariable Long id) {
+    public ResponseEntity<?> obtenerCategoria(@PathVariable Long id) {
 
         return categoriaRepositorio.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
 
 //        return categoriaRepositorio.findById(id).isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(categoriaRepositorio.findById(id));
 

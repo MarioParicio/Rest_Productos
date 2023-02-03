@@ -3,6 +3,7 @@ package org.iesch.ad.demo.Rest_Productos.controladores;
 
 import org.iesch.ad.demo.Rest_Productos.dto.CreateProductoDTO;
 import org.iesch.ad.demo.Rest_Productos.dto.converter.ProductoDTOConverter;
+import org.iesch.ad.demo.Rest_Productos.error.ProductoNoEncontradoException;
 import org.iesch.ad.demo.Rest_Productos.modelos.Producto;
 import org.iesch.ad.demo.Rest_Productos.repositorio.CategoriaRepositorio;
 import org.iesch.ad.demo.Rest_Productos.repositorio.ProductoRepositorio;
@@ -33,16 +34,19 @@ public class ProductoControlador {
     public List<Producto> obtenerTodos(){
         return productoRepositorio.findAll();
     }
-    @GetMapping("obternerProducto")
-    public ResponseEntity<?> obtenerProducto(@Param("id") Long id ){
-        Producto result = productoRepositorio.findById(id).orElse(null);
+
+    @GetMapping("obternerProducto/{id}")
+    public ResponseEntity<?> obtenerProducto(@PathVariable Long id) {
+/*        Producto result = productoRepositorio.findById(id).orElse(null);
         if (result == null){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(result);*/
 
         //Manera más corta
-//        return productoRepositorio.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return productoRepositorio.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
+
 
     }
     @GetMapping("obternerTodosProductos")
@@ -97,6 +101,7 @@ public class ProductoControlador {
 
     }
 
+    @CrossOrigin(origins = "http://localhost:9090")
     @GetMapping("productoDTO")
     public ResponseEntity<?> obtenerTodosATravesDeDTO(){
 /*        List<Producto> result = productoRepositorio.findAll();
@@ -128,6 +133,7 @@ public class ProductoControlador {
 
 
     }
+
 
     @PostMapping("productosDTO")
     public ResponseEntity<?> insertarProductosDTO(@RequestBody List<CreateProductoDTO> createProductoDTO){
