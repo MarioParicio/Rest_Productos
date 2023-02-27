@@ -3,20 +3,16 @@ package org.iesch.ad.demo.Rest_Productos.controladores;
 
 import org.iesch.ad.demo.Rest_Productos.dto.CreateProductoDTO;
 import org.iesch.ad.demo.Rest_Productos.dto.converter.ProductoDTOConverter;
-import org.iesch.ad.demo.Rest_Productos.error.ProductoNoEncontradoException;
 import org.iesch.ad.demo.Rest_Productos.modelos.Producto;
 import org.iesch.ad.demo.Rest_Productos.repositorio.CategoriaRepositorio;
 import org.iesch.ad.demo.Rest_Productos.repositorio.ProductoRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/producto/")
@@ -26,7 +22,7 @@ public class ProductoControlador {
     @Autowired
     ProductoRepositorio productoRepositorio;
     @Autowired
-    ProductoDTOConverter ProductoDTOConverter;
+    ProductoDTOConverter productoDTOConverter;
     @Autowired
     CategoriaRepositorio categoriaRepositorio;
 
@@ -82,9 +78,12 @@ public class ProductoControlador {
 
     @DeleteMapping("borrarProducto")
     public ResponseEntity<?> deletearProducto(@RequestParam("id") Long  idProduct){
-        productoRepositorio.deleteById(idProduct);
-        return ResponseEntity.noContent().build();
 
+
+        return productoRepositorio.findById(idProduct).map(producto -> {
+            productoRepositorio.delete(producto);
+            return ResponseEntity.ok().build();
+        }).orElseGet(() -> ResponseEntity.notFound().build());
 
 
     }
@@ -113,7 +112,7 @@ public class ProductoControlador {
 
             //Manera más corta
             return productoRepositorio.findAll().isEmpty() ?  ResponseEntity.notFound().build() :
-                    ResponseEntity.ok(productoRepositorio.findAll().stream().map(ProductoDTOConverter::converToDTO));
+                    ResponseEntity.ok(productoRepositorio.findAll().stream().map(productoDTOConverter::converToDTO));
 
 
 
@@ -128,7 +127,7 @@ public class ProductoControlador {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(producto));*/
 
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(ProductoDTOConverter.convertDesdeCreateProductoDTO(createProductoDTO)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(productoDTOConverter.convertDesdeCreateProductoDTO(createProductoDTO)));
 
 
 
@@ -138,7 +137,7 @@ public class ProductoControlador {
     @PostMapping("productosDTO")
     public ResponseEntity<?> insertarProductosDTO(@RequestBody List<CreateProductoDTO> createProductoDTO){
 
-        List<Producto> productos = createProductoDTO.stream().map(ProductoDTOConverter::convertDesdeCreateProductoDTO).toList();
+        List<Producto> productos = createProductoDTO.stream().map(productoDTOConverter::convertDesdeCreateProductoDTO).toList();
         return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.saveAll(productos));
 
     }

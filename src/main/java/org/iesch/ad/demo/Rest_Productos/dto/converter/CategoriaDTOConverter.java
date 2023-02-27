@@ -3,7 +3,6 @@ package org.iesch.ad.demo.Rest_Productos.dto.converter;
 
 import lombok.RequiredArgsConstructor;
 import org.iesch.ad.demo.Rest_Productos.dto.CategoriaDTO;
-import org.iesch.ad.demo.Rest_Productos.dto.ProductoDTO;
 import org.iesch.ad.demo.Rest_Productos.modelos.Categoria;
 import org.iesch.ad.demo.Rest_Productos.modelos.Producto;
 import org.iesch.ad.demo.Rest_Productos.repositorio.ProductoRepositorio;
@@ -25,7 +24,7 @@ public class CategoriaDTOConverter
         CategoriaDTO categoriaDTO = modelMapper.map(categoria, CategoriaDTO.class);
         List<Producto> productos = new ArrayList<>();
         productoRepositorio.findAll().forEach(producto -> {
-            if(producto.getCategoria().getId() == categoria.getId()){
+            if(producto.getCategoria().getCodigo() == categoria.getCodigo()){
                 productos.add(producto);
             }
         });
