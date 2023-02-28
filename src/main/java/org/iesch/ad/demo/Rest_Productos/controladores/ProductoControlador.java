@@ -33,13 +33,7 @@ public class ProductoControlador {
 
     @GetMapping("obternerProducto/{id}")
     public ResponseEntity<?> obtenerProducto(@PathVariable Long id) {
-/*        Producto result = productoRepositorio.findById(id).orElse(null);
-        if (result == null){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(result);*/
 
-        //Manera más corta
         return productoRepositorio.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 
 
@@ -47,14 +41,7 @@ public class ProductoControlador {
     }
     @GetMapping("obternerTodosProductos")
     public ResponseEntity<?> obtenerTodosProductos(){
-/*        List< Producto> result = productoRepositorio.findAll();
-        if (result.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(result);
-        }*/
 
-        //Manera más corta
         return productoRepositorio.findAll().isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(productoRepositorio.findAll());
 
 
@@ -67,7 +54,7 @@ public class ProductoControlador {
     public ResponseEntity<?> insertarProducto(@RequestBody Producto producto){
 
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(producto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(producto));
 
     }
     @PostMapping("añadirProductos")
@@ -103,12 +90,7 @@ public class ProductoControlador {
     @CrossOrigin(origins = "http://localhost:9090")
     @GetMapping("productoDTO")
     public ResponseEntity<?> obtenerTodosATravesDeDTO(){
-/*        List<Producto> result = productoRepositorio.findAll();
-        if (result.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-//            No hace falta el collect la función map ya devuelve un stream
-         return ResponseEntity.ok(result.stream().map(ProductoDTOConverter::converToDTO).collect(Collectors.toList()));*/
+
 
             //Manera más corta
             return productoRepositorio.findAll().isEmpty() ?  ResponseEntity.notFound().build() :
@@ -120,11 +102,7 @@ public class ProductoControlador {
     @PostMapping("productoDTO")
     public ResponseEntity<?> insertarProductoDTO(@RequestBody CreateProductoDTO createProductoDTO){
 
-/*        Producto producto = new Producto();
-        producto.setNombre(createProductoDTO.getNombre());
-        producto.setPrecio(createProductoDTO.getPrecio());
-        producto.setCategoria(categoriaRepositorio.findById(createProductoDTO.getCategoriaId()).orElse(null));
-        return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(producto));*/
+
 
 
         return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.save(productoDTOConverter.convertDesdeCreateProductoDTO(createProductoDTO)));
@@ -137,8 +115,9 @@ public class ProductoControlador {
     @PostMapping("productosDTO")
     public ResponseEntity<?> insertarProductosDTO(@RequestBody List<CreateProductoDTO> createProductoDTO){
 
-        List<Producto> productos = createProductoDTO.stream().map(productoDTOConverter::convertDesdeCreateProductoDTO).toList();
-        return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.saveAll(productos));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(productoRepositorio.saveAll(createProductoDTO.stream().map
+                (productoDTOConverter::convertDesdeCreateProductoDTO).toList()));
 
     }
 
